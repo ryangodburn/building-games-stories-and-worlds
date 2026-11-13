@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hollywood Hustling</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        #story {
+            width: 90%;
+            max-width: 600px;
+            margin: 2em auto;
+            padding: 2em;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .passage {
+            display: none;
+        }
+        .passage.active {
+            display: block;
+        }
+        h1 {
+            color: #444;
+            margin-top: 0;
+        }
+        .auction-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #c00;
+            margin: 0.5em 0;
+        }
+        .points {
+            font-weight: bold;
+            color: #008800;
+            margin-bottom: 1em;
+        }
+        .movie-title {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 1em;
+        }
+        .prop-image {
+            margin: 1em 0;
+        }
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 1em;
+        }
+        button {
+            background-color: #4a4a4a;
+            color: white;
+            border: none;
+            padding: 0.5em 1em;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover:not([disabled]) {
+            background-color: #333;
+        }
+        button[disabled] {
+            background-color: #999;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .auction-description {
+            margin: 1em 0;
+            line-height: 1.5;
+        }
+        .progress {
+            margin-top: 1em;
+            font-style: italic;
+            color: #666;
+        }
+        .rules-section {
+            margin-bottom: 1.5em;
+        }
+        .rules-section h2 {
+            color: #444;
+            margin-bottom: 0.5em;
+        }
+        .rules-section ul {
+            padding-left: 1.5em;
+        }
+        .rules-section ol {
+            padding-left: 1.5em;
+        }
+        
+        /* Rules Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 8px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-modal:hover {
+            color: black;
+        }
+        .show-rules-btn {
+            background-color: #865a1e;
+        }
+        .show-rules-btn:hover {
+            background-color: #6d4916;
+        }
+    </style>
+</head>
+<body>
+    <div id="story">
+        <div id="start" class="passage active">
+            <h1>Hollywood Hustling</h1>
+			
+			<div class="name">
+                <h2>By Ryan Godburn</h2>
+            </div>
+			
+			<div class="story-intro">
+                <p>Welcome to the most exclusive auction in Hollywood history! As the lights dim in the private showroom, you find yourself seated among a select group of high-rolling collectors, each with enough cash to buy a small production studio. The tension in the air is palpable as the auctioneer steps onto the podium, his gavel gleaming under the spotlight.</p>
+                
+                <p>"Ladies and gentlemen," he announces with theatrical flair, "tonight we present an unprecedented collection of the most iconic props ever to grace the silver screen. From the magical to the mechanical, each item before you has shaped cinema history and captured the imagination of millions." He leans forward with a conspiratorial smile. "But in this room, the true value of these treasures isn't just measured in dollars—it's in your ability to outbid, outwit, and outbluff your fellow collectors. Some of you may end up paying for nothing but thin air, while others might steal a priceless artifact for a fraction of its worth." The auctioneer raises his gavel. "Shall we begin?"</p>
+            </div>
+			
+			<a href="https://hollywood-hustling-scoring.netlify.app/" class="scoring-link" target="_blank">See possible auctions props and keep track of scoring here!</a>
+
+            
+            <div class="rules-section">
+                <h2>Setup:</h2>
+                <p>Up to 4 players each start with:</p>
+                <ul>
+                    <li>$1 x 5pcs</li>
+                    <li>$2 x 5pcs</li>
+                    <li>$5 x 5pcs</li>
+                    <li>$10 x 5pcs</li>
+                    <li>$20 x 5pcs</li>
+                    <li>$50 x 5pcs</li>
+                    <li>$100 x 5pcs</li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h2>Gameplay:</h2>
+                <p>Each round on the auction website reveals a movie prop listing showing:</p>
+                <ul>
+                    <li>Name of prop</li>
+                    <li>Name of movie</li>
+                    <li>Point value</li>
+                    <li>Image</li>
+                    <li>Description</li>
+                </ul>
+                <p><strong>Note:</strong> There are 20 possible props in the collection, but only 15 will be presented in each auction game. Plan your bidding and collection strategy carefully!</p>
+            </div>
+            
+            <div class="rules-section">
+                <h2>Bidding Phase:</h2>
+                <ul>
+                    <li>First auction starts with a random player</li>
+                    <li>Subsequent auctions start with the previous winner</li>
+                    <li>Bidding proceeds clockwise</li>
+                    <li>On your turn, you must:
+                        <ol type="a">
+                            <li>Increase the bid - Two ways to do this:
+                                <ul>
+                                    <li>Place money face UP in your hand (actual bid increase)</li>
+                                    <li>Place money face DOWN in your hand (bluff money that doesn't count)</li>
+                                    <li>Announce your new total bid (can be true or false)</li>
+                                </ul>
+                            </li>
+                            <li>Call "Bluff" on another player</li>
+                            <li>Drop out</li>
+                        </ol>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h2>Resolution:</h2>
+                <p><strong>If all but one player drops out:</strong></p>
+                <ul>
+                    <li>Last player standing wins the prop</li>
+                    <li>They pay their actual bid money (face up only) to the bank</li>
+                    <li>They keep any face down money</li>
+                </ul>
+                
+                <p><strong>If someone calls "Bluff":</strong></p>
+                <ul>
+                    <li>The challenged player reveals their actual bid (only face up money counts)</li>
+                    <li>If they were bluffing (actual bid lower than claimed):
+                        <ul>
+                            <li>Bluffer loses their bid money to the player who called them out</li>
+                            <li>Bluffer drops out of the current auction</li>
+                            <li>Prop auction continues with remaining players</li>
+                        </ul>
+                    </li>
+                    <li>If they weren't bluffing:
+                        <ul>
+                            <li>Caller loses their bid money to the challenged player</li>
+                            <li>Caller drops out of the current auction</li>
+                            <li>Prop auction continues with remaining players</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h2>Genre Collections - Bonus Points:</h2>
+                <p>Collect props from the same genre to earn bonus points:</p>
+                <ul>
+                    <li><strong>Sci-Fi Collection</strong>: +30 points for collecting 3+ sci-fi movie props
+                        <ul>
+                            <li>DeLorean Time Machine, Luke's Lightsaber, T-800 Arm, Deckard's Gun, Infinity Gauntlet</li>
+                        </ul>
+                    </li>
+                    <li><strong>Fantasy Collection</strong>: +25 points for collecting 2+ fantasy movie props
+                        <ul>
+                            <li>The One Ring, Ruby Slippers</li>
+                        </ul>
+                    </li>
+                    <li><strong>Action/Adventure Collection</strong>: +35 points for collecting 3+ action/adventure props
+                        <ul>
+                            <li>Indiana Jones' Whip, Continental Card, 2022 Batmobile</li>
+                        </ul>
+                    </li>
+                    <li><strong>Horror Collection</strong>: +30 points for collecting 2+ horror movie props
+                        <ul>
+                            <li>Axe from The Shining, Facehugger Egg</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h2>End Game:</h2>
+                <ul>
+                    <li>Game ends when all 15 props are auctioned or all player money is gone</li>
+                    <li>Winner is determined by:
+                        <ul>
+                            <li>Total points from won props</li>
+                            <li>Bonus points from Genre Collections</li>
+                        </ul>
+						<li>Winner takes all money accumulated in the bank</li>
+                    </li>
+                </ul>
+            </div>
+            
+            <button id="begin-btn">Begin Auctions</button>
+        </div>
+
+        <div id="auction1" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Ruby Slippers</div>
+            <div class="movie-title">The Wizard of Oz (1939)</div>
+            <div class="points">100 Points</div>
+            <div class="prop-image">
+                <img src="https://media.cnn.com/api/v1/images/stellar/prod/240122135527-stolen-ruby-slippers-the-wizard-of-oz-fbi-minnesota-2018.jpg" alt="Ruby Slippers from The Wizard of Oz" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+			<div class="auction-description">
+				<p>These iconic red sequined shoes worn by Judy Garland as Dorothy Gale represent perhaps the most recognizable prop in cinema history. Designed by MGM's chief costume designer Gilbert Adrian, several pairs were made for the production, with only five known to exist today.</p>
+				<p>Their sparkling ruby appearance was achieved through the application of sequins to red fabric pumps, which were then fitted with red felt on the soles to muffle sound during dance sequences. It has been said that this item can grant any wish. These slippers symbolize the magic and wonder of Hollywood's golden age of filmmaking.</p>
+			</div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction2" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">DeLorean Time Machine</div>
+            <div class="movie-title">Back to the Future (1985)</div>
+            <div class="points">90 Points</div>
+            <div class="prop-image">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0f/DeLorean_Replica_Kovacs_Time_Machine.png" alt="DeLorean Time Machine from Back to the Future" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This modified 1981 DeLorean DMC-12 is instantly recognizable as Doc Brown's time machine, complete with flux capacitor and requisite plutonium chamber. The vehicle's stainless steel construction and distinctive gull-wing doors made it the perfect canvas for a futuristic time machine.</p>
+                <p>Featuring a complex array of cables, lights, and fictional time-travel components, the DeLorean remains one of cinema's most beloved vehicles and an enduring symbol of 1980s sci-fi innovation.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction3" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">The One Ring</div>
+            <div class="movie-title">The Lord of the Rings: The Fellowship of the Ring (2001)</div>
+            <div class="points">85 Points</div>
+            <div class="prop-image">
+                <img src="https://www.wetanz.com/media/catalog/product/cache/eb4a92b8897ce0036ed4d24ecbe18f37/1/4/1468044588cb6de1ae583f9a6ad2b28cc2e90e0f5b.jpg" alt="The One Ring from The Lord of the Rings" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This seemingly simple gold band holds the power to rule all of Middle-earth. Created by Peter Jackson's Weta Workshop for the groundbreaking trilogy, the screen-used ring features the Black Speech of Mordor inscription that becomes visible only when heated.</p>
+                <p>Multiple versions were created for different shooting scenarios, including larger versions for close-up shots. Despite its minimalist design, the One Ring stands as perhaps the most powerful and significant object in fantasy film history.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction4" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Luke's Lightsaber</div>
+            <div class="movie-title">Star Wars: A New Hope (1977)</div>
+            <div class="points">80 Points</div>
+            <div class="prop-image">
+                <img src="https://www.sideshow.com/cdn-cgi/image/height=850,quality=90,f=auto/https://www.sideshow.com/storage/product-images/912540/luke-skywalker-lightsaber_star-wars_gallery_64adc725e0858.jpg" alt="Luke's Lightsaber from Star Wars" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>Originally belonging to Anakin Skywalker before being passed to Luke by Obi-Wan Kenobi, this elegant weapon from a more civilized age was constructed from a Graflex camera flash handle with added details.</p>
+                <p>The original prop underwent several modifications throughout the original trilogy. This iconic hilt design established the visual language for all lightsabers to follow and represents the heart of the Star Wars saga—the legacy of the Jedi and the ongoing battle between light and dark.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction5" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Infinity Gauntlet</div>
+            <div class="movie-title">Avengers: Infinity War (2018)</div>
+            <div class="points">75 Points</div>
+            <div class="prop-image">
+                <img src="https://i.etsystatic.com/16893669/r/il/146757/2017617403/il_fullxfull.2017617403_la1o.jpg" alt="Infinity Gauntlet from Avengers: Infinity War" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This imposing golden glove was designed to harness the power of all six Infinity Stones, giving its wielder godlike abilities to reshape reality itself. Created for the villain Thanos, the gauntlet features intricate detailing and illuminated stone settings.</p>
+                <p>The prop required both practical and CGI elements to achieve its final on-screen appearance. The image of the completed gauntlet has become one of the most recognizable symbols of the entire Marvel Cinematic Universe.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction6" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Indiana Jones' Whip</div>
+            <div class="movie-title">Raiders of the Lost Ark (1981)</div>
+            <div class="points">70 Points</div>
+            <div class="prop-image">
+                <img src="https://i.ebayimg.com/images/g/5mAAAOSwIIxZikd-/s-l400.jpg" alt="Indiana Jones' Whip from Raiders of the Lost Ark" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This 10-foot bullwhip served as both tool and weapon for archaeology's greatest adventurer. Made from kangaroo hide, multiple whips were used during filming, with different lengths for various stunts.</p>
+                <p>Harrison Ford trained extensively with the whip to perform many of his own stunts. This iconic prop not only defined the visual silhouette of Indiana Jones but also created some of cinema's most memorable sound effects when cracked on screen.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction7" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Jurassic Park Jeep</div>
+            <div class="movie-title">Jurassic Park (1993)</div>
+            <div class="points">65 Points</div>
+            <div class="prop-image">
+                <img src="https://www.motorbiscuit.com/wp-content/uploads/2022/12/Jurassic-Park-Jeep-Wrangler-1993-_2.jpg" alt="Jurassic Park Jeep" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This modified 1992 Jeep Wrangler Sahara in the distinctive red and gray "4" livery transported visitors through the ill-fated dinosaur theme park. Complete with the iconic Jurassic Park logo on the doors and custom roll bars, these vehicles faced everything from T-Rex attacks to dilophosaurus encounters.</p>
+                <p>Several Jeeps were created for the production, with this particular vehicle featuring in some of the film's most memorable chase sequences.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction8" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Pulp Fiction Briefcase</div>
+            <div class="movie-title">Pulp Fiction (1994)</div>
+            <div class="points">60 Points</div>
+            <div class="prop-image">
+                <img src="https://i690.photobucket.com/albums/vv261/pbpicsandvids/PulpFictionBriefcase-OpenLightOff.jpg" alt="Pulp Fiction Briefcase" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This mysterious briefcase with its glowing golden contents became one of cinema's greatest MacGuffins. When opened, an ethereal golden glow illuminates the faces of characters, though viewers never see what's inside.</p>
+                <p>The effect was achieved by placing a small light bulb inside the case and having it activate when opened. Quentin Tarantino has never revealed what the briefcase contains, leaving it to become one of film's most debated mysteries.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction9" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">T-800 Arm</div>
+            <div class="movie-title">Terminator 2: Judgment Day (1991)</div>
+            <div class="points">55 Points</div>
+            <div class="prop-image">
+                <img src="https://images.propstore.com/d3a1be8f049dccfab7ee9fbc5a06e80f-2.jpg" alt="T-800 Arm from Terminator 2" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This mechanical appendage from the T-800 endoskeleton represents groundbreaking special effects work from Stan Winston Studio. The screen-used prop features intricate hydraulic detailing, metal components, and articulated finger joints.</p>
+                <p>In the film's final scene, this arm is crushed in a steel mill, supposedly eliminating the threat of Skynet. The prop combines practical effects craftsmanship with the film's pioneering CGI work that revolutionized Hollywood.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction10" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Deckard's Gun</div>
+            <div class="movie-title">Blade Runner (1982)</div>
+            <div class="points">50 Points</div>
+            <div class="prop-image">
+                <img src="https://www.imfdb.org/images/f/f3/BladeRunner1982Blaster01.jpg" alt="Deckard's Gun from Blade Runner" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This futuristic sidearm, officially known as the "PKD Special" (a nod to author Philip K. Dick), was designed specifically for Harrison Ford's character. Created by futurist Syd Mead, the gun combines elements of a Steyr Mannlicher rifle with a Charter Arms Bulldog revolver and custom LED lighting.</p>
+                <p>The unique design has influenced countless sci-fi weapons since and perfectly embodies the film's gritty, retrofitted future aesthetic.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction11" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">2022 Batmobile</div>
+            <div class="movie-title">The Batman (2022)</div>
+            <div class="points">45 Points</div>
+            <div class="prop-image">
+                <img src="https://static1.srcdn.com/wordpress/wp-content/uploads/2023/04/batmobile-in-the-batman.png" alt="2022 Batmobile from The Batman" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This muscle car-inspired Batmobile represents a dramatic departure from previous versions, built from a heavily modified classic American car with an exposed rear engine. Designer James Chinlund created it to feel like a DIY project by Bruce Wayne himself.</p>
+                <p>Unlike the militaristic or sleek designs of previous films, this vehicle emphasizes raw power and intimidation, with its exposed engine, reinforced chassis, and menacing front end designed to evoke a predatory animal.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction12" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Godzilla Rubber Suit</div>
+            <div class="movie-title">Godzilla (1954)</div>
+            <div class="points">40 Points</div>
+            <div class="prop-image">
+                <img src="https://i.redd.it/1aem1y620l431.jpg" alt="Godzilla Rubber Suit from Godzilla (1954)" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This pioneering "suitmation" costume weighing over 200 pounds was worn by actor Haruo Nakajima to bring the King of Monsters to life. Made from a secret rubber compound over a bamboo frame, the suit required handlers to assist the actor between takes due to its extreme heat and weight.</p>
+                <p>The distinctive design with its alligator-like skin texture, dorsal plates, and reptilian features established the look of Japan's most famous movie monster for decades to follow.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction13" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Sam Raimi Spider-Man Suit</div>
+            <div class="movie-title">Spider-Man (2002)</div>
+            <div class="points">35 Points</div>
+            <div class="prop-image">
+                <img src="https://joyydesign.com/cdn/shop/files/20230802131204.jpg" alt="Sam Raimi Spider-Man Suit" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This revolutionary superhero costume featured raised webbing, metallic eye lenses, and a muscle structure that eliminated the need for drawn-on details seen in earlier superhero films. Created by designer James Acheson, the suit required hundreds of hours of work from concept to completion.</p>
+                <p>Unlike previous superhero costumes, this design established a new standard for practical superhero suits that balanced comic accuracy with real-world functionality.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction14" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Maverick's Helmet</div>
+            <div class="movie-title">Top Gun (1986)</div>
+            <div class="points">30 Points</div>
+            <div class="prop-image">
+                <img src="https://i.etsystatic.com/28659055/r/il/7d51bf/3163628011/il_fullxfull.3163628011_s1au.jpg" alt="Maverick's Helmet from Top Gun" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This HGU-33 fighter pilot helmet worn by Tom Cruise features the callsign "Maverick" and distinctive eagle design. Modified for filming with special camera mounts and internal padding to fit actors comfortably during the high-G aerial sequences, the helmet became an instant cultural icon.</p>
+                <p>The visor reflects the dramatic aerial photography that made the film famous, while the personalized details showcase the competitive individualism central to the story.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction15" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Immortan Joe's Mask</div>
+            <div class="movie-title">Mad Max: Fury Road (2015)</div>
+            <div class="points">28 Points</div>
+            <div class="prop-image">
+                <img src="https://i.etsystatic.com/23746352/r/il/a752c5/3998739934/il_fullxfull.3998739934_630b.jpg" alt="Immortan Joe's Mask from Mad Max: Fury Road" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This intimidating breathing apparatus was designed to both sustain the villain's life and create a fearsome appearance combining elements of a skull, horse teeth, and industrial components. Created by hair and makeup designer Lesley Vanderwalt, the mask includes clear tubes, decorative medals, and weathered paint effects.</p>
+                <p>The design perfectly embodies the film's distinctive post-apocalyptic aesthetic where objects are repurposed and combined in unexpected ways.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction16" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Axe</div>
+            <div class="movie-title">The Shining (1980)</div>
+            <div class="points">25 Points</div>
+            <div class="prop-image">
+                <img src="https://static1.srcdn.com/wordpress/wp-content/uploads/2022/04/The-Shining-Axe-Prop-Auction.jpg" alt="Axe from The Shining" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This fire axe used by Jack Nicholson in the iconic "Here's Johnny!" scene represents one of horror cinema's most terrifying moments. Multiple axes were created for different shots, including rubber versions for safety and heavier wood and metal versions for authentic door-chopping scenes.</p>
+                <p>Stanley Kubrick's perfectionism meant dozens of doors were destroyed during filming to capture the perfect splintering effect, making this prop central to one of cinema's most unforgettable sequences.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction17" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Facehugger Egg</div>
+            <div class="movie-title">Alien (1979)</div>
+            <div class="points">22 Points</div>
+            <div class="prop-image">
+                <img src="https://m.media-amazon.com/images/I/71K5pEhxnjL._AC_UF894,1000_QL80_.jpg" alt="Facehugger Egg from Alien" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This biomechanical egg stands approximately two feet tall and houses the first stage of the xenomorph lifecycle. Designed by H.R. Giger, the prop features a leathery exterior with an opening "petal" structure at the top.</p>
+                <p>The interior contains hydraulic mechanisms to simulate the movement when the facehugger emerges. The prop combines organic and mechanical elements in keeping with Giger's distinctive aesthetic that defined the look of the entire Alien franchise.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction18" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Continental Card</div>
+            <div class="movie-title">John Wick (2014)</div>
+            <div class="points">20 Points</div>
+            <div class="prop-image">
+                <img src="https://khristore.com/wp-content/uploads/2023/04/John-Wick-Continental-card-carte-Hotel-Movie-Prop-3.jpg" alt="Continental Card from John Wick" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This gold-plated metal membership card grants access to the Continental Hotel, the neutral ground for assassins in the John Wick universe. Featuring an art deco design with the hotel's logo and subtle security features, the card represents membership in the film's elaborate underground world of assassins.</p>
+                <p>The prop embodies the film's unique blend of fantasy and reality, where ordinary objects take on extraordinary significance within the carefully constructed mythology.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction19" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Folger's Coffee Urn</div>
+            <div class="movie-title">The Big Lebowski (1998)</div>
+            <div class="points">18 Points</div>
+            <div class="prop-image">
+                <img src="https://aril.memorial/wp-content/uploads/2023/10/Big-Lebowski-Urn-031-front-800x800.jpg" alt="Folger's Coffee Urn from The Big Lebowski" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>This ordinary coffee can contains the cremated remains of Theodore Donald Kerabatsos (Donny) and becomes the centerpiece of one of cinema's most awkwardly hilarious funeral scenes. The Folger's coffee urn represents the Coen Brothers' signature blend of the profound and the mundane.</p>
+                <p>When Walter attempts to scatter Donny's ashes over the Pacific Ocean only to have them blow back onto The Dude, the simple prop becomes an unforgettable symbol of life's chaotic absurdity.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="auction20" class="passage">
+            <h1>Auction</h1>
+            <div class="auction-number">Wallace and Gromit Clay Characters</div>
+            <div class="movie-title">Wallace and Gromit (1989-present)</div>
+            <div class="points">15 Points</div>
+            <div class="prop-image">
+                <img src="https://media.nbcwashington.com/2024/12/GettyImages-2181559426.jpg" alt="Wallace and Gromit Clay Characters" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px;">
+            </div>
+            <div class="auction-description">
+                <p>These original clay animation puppets represent two of the most beloved stop-motion characters in cinema history. Created by Nick Park for Aardman Animations, each character puppet stands approximately 9-10 inches tall and is constructed from plasticine clay over metal armatures that allow for precise positioning during animation.</p>
+                <p>Wallace, the eccentric cheese-loving inventor, features his signature green vest and wide smile, while Gromit, his silent but expressive dog, showcases the incredibly detailed craftsmanship that allows animators to convey complex emotions through subtle facial adjustments. Each production required multiple versions of these characters, with specialized models made for different expressions and poses.</p>
+            </div>
+            <div class="progress"></div>
+            <div class="navigation-buttons">
+                <button class="back-btn" disabled>Go Back to Previous Auction</button>
+                <button class="show-rules-btn">Show Rules</button>
+                <button class="next-btn">Proceed to Next Auction</button>
+            </div>
+        </div>
+
+        <div id="end" class="passage">
+            <h1>Auction Complete!</h1>
+            <p>You have visited all of the movie prop auction lots! The winner is the person with the most points and gets to take all the money in the bank. Thank you for playing!</p>
+            <button id="restart-btn">Play Again</button>
+        </div>
+    </div>
+    
+    <!-- Rules Modal -->
+    <div id="rules-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h1>Hollywood Hustling - Rules</h1>
+			
+			<a href="https://hollywood-hustling-scoring.netlify.app/" class="scoring-link" target="_blank">See possible auctions props and keep track of scoring here!</a>
+
+            
+            <div class="rules-section">
+                <h2>Setup:</h2>
+                <p>Up to 4 players each start with:</p>
+                <ul>
+                    <li>$1 x 5pcs</li>
+                    <li>$2 x 5pcs</li>
+                    <li>$5 x 5pcs</li>
+                    <li>$10 x 5pcs</li>
+                    <li>$20 x 5pcs</li>
+                    <li>$50 x 5pcs</li>
+                    <li>$100 x 5pcs</li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h2>Gameplay:</h2>
+                <p>Each round on the auction website reveals a movie prop listing showing:</p>
+                <ul>
+                    <li>Name of prop</li>
+                    <li>Name of movie</li>
+                    <li>Point value</li>
+                    <li>Image</li>
+                    <li>Description</li>
+                </ul>
+                <p><strong>Note:</strong> There are 20 possible props in the collection, but only 15 will be presented in each auction game. Plan your bidding and collection strategy carefully!</p>
+            </div>
+            
+            <div class="rules-section">
+                <h2>Bidding Phase:</h2>
+                <ul>
+                    <li>First auction starts with a random player</li>
+                    <li>Subsequent auctions start with the previous winner</li>
+                    <li>Bidding proceeds clockwise</li>
+                    <li>On your turn, you must:
+                        <ol type="a">
+                            <li>Increase the bid - Two ways to do this:
+                                <ul>
+                                    <li>Place money face UP in your hand (actual bid increase)</li>
+                                    <li>Place money face DOWN in your hand (bluff money that doesn't count)</li>
+                                    <li>Announce your new total bid (can be true or false)</li>
+                                </ul>
+                            </li>
+                            <li>Call "Bluff" on another player</li>
+                            <li>Drop out</li>
+                        </ol>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h2>Resolution:</h2>
+                <p><strong>If all but one player drops out:</strong></p>
+                <ul>
+                    <li>Last player standing wins the prop</li>
+                    <li>They pay their actual bid money (face up only) to the bank</li>
+                    <li>They keep any face down money</li>
+                </ul>
+                
+                <p><strong>If someone calls "Bluff":</strong></p>
+                <ul>
+                    <li>The challenged player reveals their actual bid (only face up money counts)</li>
+                    <li>If they were bluffing (actual bid lower than claimed):
+                        <ul>
+                            <li>Bluffer loses their bid money to the player who called them out</li>
+                            <li>Bluffer drops out of the current auction</li>
+                            <li>Prop auction continues with remaining players</li>
+                        </ul>
+                    </li>
+                    <li>If they weren't bluffing:
+                        <ul>
+                            <li>Caller loses their bid money to the challenged player</li>
+                            <li>Caller drops out of the current auction</li>
+                            <li>Prop auction continues with remaining players</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h2>Genre Collections - Bonus Points:</h2>
+                <p>Collect props from the same genre to earn bonus points:</p>
+                <ul>
+                    <li><strong>Sci-Fi Collection</strong>: +30 points for collecting 3+ sci-fi movie props
+                        <ul>
+                            <li>DeLorean Time Machine, Luke's Lightsaber, T-800 Arm, Deckard's Gun, Infinity Gauntlet</li>
+                        </ul>
+                    </li>
+                    <li><strong>Fantasy Collection</strong>: +25 points for collecting 2+ fantasy movie props
+                        <ul>
+                            <li>The One Ring, Ruby Slippers</li>
+                        </ul>
+                    </li>
+                    <li><strong>Action/Adventure Collection</strong>: +35 points for collecting 3+ action/adventure props
+                        <ul>
+                            <li>Indiana Jones' Whip, Continental Card, 2022 Batmobile</li>
+                        </ul>
+                    </li>
+                    <li><strong>Horror Collection</strong>: +30 points for collecting 2+ horror movie props
+                        <ul>
+                            <li>Axe from The Shining, Facehugger Egg</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h2>End Game:</h2>
+                <ul>
+                    <li>Game ends when all 15 props are auctioned or all player money is gone</li>
+                    <li>Winner is determined by:
+                        <ul>
+                            <li>Total points from won props</li>
+                            <li>Bonus points from Genre Collections</li>
+                        </ul>
+					<li>Winner takes all money accumulated in the bank</li>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game state
+            let currentAuctionIndex = 0;
+            let auctionSequence = [];
+            
+            // Get the modal
+            const modal = document.getElementById('rules-modal');
+            const closeBtn = document.querySelector('.close-modal');
+            
+            // Generate a random sequence of 15 auctions, ensuring Ruby Slippers (auction1) is included
+            function generateRandomSequence() {
+                // Start with the ruby slippers (auction1)
+                let sequence = [1];
+                
+                // Create array of remaining auctions (2-20)
+                let remainingAuctions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+                
+                // Randomly select 14 more auctions from the remaining options
+                for (let i = 0; i < 14; i++) {
+                    const randomIndex = Math.floor(Math.random() * remainingAuctions.length);
+                    const auctionNumber = remainingAuctions.splice(randomIndex, 1)[0];
+                    sequence.push(auctionNumber);
+                }
+                
+                // Shuffle the final sequence so Ruby Slippers isn't always first
+                for (let i = sequence.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [sequence[i], sequence[j]] = [sequence[j], sequence[i]]; // Swap elements
+                }
+                
+                return sequence;
+            }
+            
+            // Navigate to a passage
+            function showPassage(passageId) {
+                // Hide all passages
+                document.querySelectorAll('.passage').forEach(passage => {
+                    passage.classList.remove('active');
+                });
+                
+                // Show the requested passage
+                const passage = document.getElementById(passageId);
+                if (passage) {
+                    passage.classList.add('active');
+                    
+                    // Update progress if this is an auction passage
+                    if (passageId.startsWith('auction')) {
+                        const progressElem = passage.querySelector('.progress');
+                        if (progressElem) {
+                            progressElem.textContent = `Auction ${currentAuctionIndex + 1} of 15`;
+                        }
+                        
+                        // Update back button state
+                        const backBtn = passage.querySelector('.back-btn');
+                        if (backBtn) {
+                            backBtn.disabled = currentAuctionIndex === 0;
+                        }
+                    }
+                }
+            }
+            
+            // Show rules modal
+            function showRules() {
+                modal.style.display = "block";
+            }
+            
+            // Hide rules modal
+            function hideRules() {
+                modal.style.display = "none";
+            }
+            
+            // Start button event
+            document.getElementById('begin-btn').addEventListener('click', function() {
+                // Reset game state
+                currentAuctionIndex = 0;
+                auctionSequence = generateRandomSequence();
+                
+                // Show first auction
+                showPassage('auction' + auctionSequence[0]);
+            });
+            
+            // Next auction buttons
+            document.querySelectorAll('.next-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    currentAuctionIndex++;
+                    
+                    if (currentAuctionIndex < 15) {
+                        // Show next auction in sequence
+                        showPassage('auction' + auctionSequence[currentAuctionIndex]);
+                    } else {
+                        // All 15 auctions visited, show end
+                        showPassage('end');
+                    }
+                });
+            });
+            
+            // Back auction buttons
+            document.querySelectorAll('.back-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (currentAuctionIndex > 0) {
+                        currentAuctionIndex--;
+                        // Show previous auction in sequence
+                        showPassage('auction' + auctionSequence[currentAuctionIndex]);
+                    }
+                });
+            });
+            
+            // Show rules buttons
+            document.querySelectorAll('.show-rules-btn').forEach(button => {
+                button.addEventListener('click', showRules);
+            });
+            
+            // Close modal when X is clicked
+            closeBtn.addEventListener('click', hideRules);
+            
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function(event) {
+                if (event.target == modal) {
+                    hideRules();
+                }
+            });
+            
+            // Restart button
+            document.getElementById('restart-btn').addEventListener('click', function() {
+                showPassage('start');
+            });
+        });
+    </script>
+</body>
+</html>
